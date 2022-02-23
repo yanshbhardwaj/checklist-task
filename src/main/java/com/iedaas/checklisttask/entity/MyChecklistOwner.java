@@ -7,27 +7,28 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "checklist_task_owner")
-public class ChecklistTaskOwner {
+@Table(name = "my_checklist_owner")
+public class MyChecklistOwner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "my_checklist_id")
     private int id;
 
     @Column(name = "owner_uid")
     @Type(type= "org.hibernate.type.UUIDCharType")
     private UUID ownerUid;
 
-    @Column(name = "checklist_task_uid")
+    @Column(name = "my_checklist_uid")
     @Type(type= "org.hibernate.type.UUIDCharType")
-    private UUID checklistTaskUid;
+    private UUID myChecklistUid;
 
-    public ChecklistTaskOwner() {
+    public MyChecklistOwner() {
     }
 
-    public ChecklistTaskOwner(UUID ownerUid, UUID checklistTaskUid) {
+    public MyChecklistOwner(UUID ownerUid, UUID myChecklistUid) {
         this.ownerUid = ownerUid;
-        this.checklistTaskUid = checklistTaskUid;
+        this.myChecklistUid = myChecklistUid;
     }
 
     public int getId() {
@@ -42,19 +43,19 @@ public class ChecklistTaskOwner {
         this.ownerUid = ownerUid;
     }
 
-    public UUID getChecklistTaskUid() {
-        return checklistTaskUid;
+    public UUID getMyChecklistUid() {
+        return myChecklistUid;
     }
 
-    public void setChecklistTaskUid(UUID checklistTaskUid) {
-        this.checklistTaskUid = checklistTaskUid;
+    public void setMyChecklistUid(UUID myChecklistUid) {
+        this.myChecklistUid = myChecklistUid;
     }
 
     @Override
     public String toString() {
-        return "ChecklistTaskOwner{" +
+        return "MyChecklistOwner{" +
                 "ownerUid=" + ownerUid +
-                ", checklistTaskUid=" + checklistTaskUid +
+                ", myChecklistUid=" + myChecklistUid +
                 '}';
     }
 
@@ -62,12 +63,12 @@ public class ChecklistTaskOwner {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ChecklistTaskOwner that = (ChecklistTaskOwner) o;
-        return ownerUid.equals(that.ownerUid) && checklistTaskUid.equals(that.checklistTaskUid);
+        MyChecklistOwner that = (MyChecklistOwner) o;
+        return ownerUid.equals(that.ownerUid) && myChecklistUid.equals(that.myChecklistUid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ownerUid, checklistTaskUid);
+        return Objects.hash(ownerUid, myChecklistUid);
     }
 }
