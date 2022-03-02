@@ -1,8 +1,11 @@
 package com.iedaas.checklisttask;
 
+import com.iedaas.checklisttask.dao.CustomRepository;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -11,29 +14,35 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthorizationFilter{
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
 
-    private static final String SECRET = "ThisIsASecret";
-    private static final String TOKEN_PREFIX = "Bearer";
     private static final String HEADER_STRING = "Authorization";
+
+    @Value("${secretKey}")
+    String secret;
+
+    @Autowired
+    private CustomRepository customRepository;
 
     public String authenticate(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
-        logger.info("Validating Jwt token :={}", token);
         String userUid = null;
-        if (token != null) {
-            try {
-                logger.trace("Decoding jwt token for fetching user uuid");
-                userUid = Jwts.parser()
-                        .setSigningKey(SECRET)
-                        .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                        .getBody()
-                        .getSubject();
-                logger.info("Fetching user uuid from token, uuid := {}", userUid);
+        String userEmail;
 
-            } catch (Exception e) {
-                logger.error("Error caused while decoding the jwt Token");
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorised user access");
-            }
+        if(token==null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Token Found");
         }
+
+        try {
+            logger.info("Validating Jwt token :={}", token);
+            userEmail = Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token.replace("Bearer", ""))
+                    .getBody()
+                    .get("email", String.class);
+        }
+        catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token or token is expired");
+        }
+        userUid = String.valueOf(customRepository.getUserUUID(userEmail));
         return userUid;
     }
 }
